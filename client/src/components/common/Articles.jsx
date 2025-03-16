@@ -1,0 +1,105 @@
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
+
+function Articles() {
+  const [articles, setArticles] = useState([])
+  const [error, setError] = useState('')
+  const [category, setCategory] = useState('') // State for selected category
+  const navigate = useNavigate()
+  const { getToken } = useAuth()
+
+  //get all articles
+  async function getArticles() {
+    const token = await getToken()
+    let url = 'http://localhost:3000/author-api/articles'
+    if (category) {
+      url += `?category=${category}`
+    }
+    let res = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    if (res.data.message === 'articles') {
+      setArticles(res.data.payload)
+      setError('')
+    } else {
+      setError(res.data.message)
+    }
+  }
+
+  //goto specific article
+  function gotoArticleById(articleObj) {
+    navigate(`../${articleObj.articleId}`, { state: articleObj })
+  }
+
+  useEffect(() => {
+    getArticles()
+  }, [category]) // Re-fetch articles when category changes
+
+  return (
+    <div className='container'>
+      <div>
+        {error.length !== 0 && <p className='display-4 text-center mt-5 text-danger'>{error}</p>}
+        <div className='mb-4'>
+          <label htmlFor="category" className="form-label">Filter by Category</label>
+          <select
+            id="category"
+            className="form-select"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="programming">Programming</option>
+            <option value="AI&ML">AI&ML</option>
+            <option value="database">Database</option>
+          </select>
+        </div>
+        <div className='row row-cols-1 row-cols-sm-2 row-cols-md-3 '>
+          {
+            articles.map((articleObj) => <div className='col' key={articleObj.articleId}>
+              <div className="card h-100">
+                <div className="card-body">
+                  {/* author image  */}
+                  <div className="author-details text-end">
+                    <img src={articleObj.authorData.profileImageUrl}
+                      width='40px'
+                      className='rounded-circle'
+                      alt="" />
+                    {/* author name */}
+                    <p>
+                      <small className='text-secondary'>
+                        {articleObj.authorData.nameOfAuthor}
+                      </small>
+                    </p>
+                  </div>
+                  {/* article title */}
+                  <h5 className='card-title'>{articleObj.title}</h5>
+                  {/* article content up to 80 chars */}
+                  <p className='card-text'>
+                    {articleObj.content.substring(0, 80) + "...."}
+                  </p>
+                  {/* read more button */}
+                  <button className='custom-btn btn-4' onClick={() => gotoArticleById(articleObj)}>
+                    Read more
+                  </button>
+                </div>
+                <div className="card-footer">
+                  {/* article's date of modification */}
+                  <small className="text-body-secondary">
+                    Last updated on {articleObj.dateOfModification}
+                  </small>
+                </div>
+              </div>
+            </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Articles
