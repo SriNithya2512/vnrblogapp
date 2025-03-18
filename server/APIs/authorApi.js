@@ -21,12 +21,15 @@ authorApp.post("/article", expressAsyncHandler(async (req, res) => {
 
 }))
 
-
 //read all articles
-authorApp.get('/articles',requireAuth({signInUrl:"unauthorized"}) ,expressAsyncHandler(async (req, res) => {
-    //read all articles from db
-    const listOfArticles = await Article.find({ isArticleActive: true });
-    res.status(200).send({ message: "articles", payload: listOfArticles })
+authorApp.get('/articles', requireAuth({ signInUrl: "unauthorized" }), expressAsyncHandler(async (req, res) => {
+    const category = req.query.category;
+    let filter = { isArticleActive: true };
+    if (category) {
+        filter.category = category;
+    }
+    const listOfArticles = await Article.find(filter);
+    res.status(200).send({ message: "articles", payload: listOfArticles });
 }))
 
 authorApp.get('/unauthorized',(req,res)=>{

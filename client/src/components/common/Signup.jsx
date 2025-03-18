@@ -1,7 +1,7 @@
 import React from 'react'
-import { SignUp } from '@clerk/clerk-react'
+import {SignUp} from '@clerk/clerk-react'
 
-function Signup() {
+function SIgnup() {
   return (
     <div className='d-flex justify-content-center align-items-center h-100'>
       <SignUp />
@@ -9,4 +9,4 @@ function Signup() {
   )
 }
 
-export default Signup
+export default SIgnup

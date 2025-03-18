@@ -12,8 +12,8 @@ import AuthorProfile from './components/author/AuthorProfile.jsx';
 import Articles from './components/common/Articles.jsx';
 import ArticleByID from './components/common/ArticleByID.jsx';
 import PostArticle from './components/author/PostArticle.jsx';
-import AdminProfile from './components/admin/AdminProfile.jsx';
 import UserAuthorContext from './contexts/UserAuthorContext.jsx';
+
 
 const browserRouterObj = createBrowserRouter([
   {
@@ -71,16 +71,13 @@ const browserRouterObj = createBrowserRouter([
             element: <Navigate to="articles" />
           }
         ]
-      },
-      {
-        path: "admin-profile",
-        element: <AdminProfile />
       }
     ]
   }
 ], {
   future: {
     v7_relativeSplatPath: true,
+
   },
 })
 
@@ -91,5 +88,6 @@ createRoot(document.getElementById('root')).render(
         v7_startTransition: true,
       }} />
     </UserAuthorContext>
+
   </StrictMode>,
 )
